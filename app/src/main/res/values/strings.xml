@@ -2,4 +2,9 @@
     <string name="app_name">RoomFinder</string>
     <string name="title_activity_login">Login</string>
     <string name="title_activity_signup">Signup</string>
+    <string name="title_activity_settings">Settings</string>
+    <string name="title_activity_detail">Detail</string>
+    <string name="title_activity_request_form">RequestForm</string>
+    <string name="title_activity_text_f">TextF</string>
+    <string name="title_activity_pending">Pending</string>
 </resources>

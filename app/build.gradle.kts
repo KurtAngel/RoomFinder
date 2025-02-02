@@ -60,6 +60,9 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
+    //viewmodel
+    implementation(libs.androidx.lifecycle.viewmodel.ktx)
+
     //http client
     implementation(libs.logging.interceptor)
     implementation(libs.okhttp)

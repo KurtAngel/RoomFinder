@@ -8,8 +8,13 @@
     <color name="black">#FF000000</color>
 
 <!--    UPang Color Theme-->
-    <color name="up_green">#3B4F26</color>
+    <color name="up_green">#246B2C</color>
     <color name="up_white">#F5F5F5</color>
-    <color name="up_yellow">#A98D00</color>
+    <color name="up_yellow">#E3E592</color>
     <color name="up_blue">#1a548f</color>
+    <color name="up_greenBtn">#3E803E</color>
+    <color name="up_blueBtn">#2F70F1</color>
+    <color name="up_itemBg">#CFFBD0</color>
+    <color name="up_outlineBg">#EAECEA</color>
+
 </resources>

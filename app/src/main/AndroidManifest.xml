@@ -2,6 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -13,14 +15,42 @@
         android:theme="@style/Theme.RoomFinder"
         tools:targetApi="31">
         <activity
-            android:name=".Signup"
+            android:name=".view.Pending"
             android:exported="false"
-            android:label="@string/title_activity_signup"
+            android:label="@string/title_activity_pending"
             android:theme="@style/Theme.RoomFinder" />
         <activity
-            android:name=".Login"
+            android:name=".view.RequestForm"
+            android:exported="false"
+            android:label="@string/title_activity_request_form"
+            android:theme="@style/Theme.RoomFinder" />
+        <activity
+            android:name=".view.Details"
+            android:exported="false"
+            android:label="@string/title_activity_detail"
+            android:theme="@style/Theme.RoomFinder" />
+        <activity
+            android:name=".view.Settings"
+            android:exported="false"
+            android:label="@string/title_activity_settings"
+            android:theme="@style/Theme.RoomFinder" />
+        <activity
+            android:name=".view.SignIn"
             android:exported="true"
+            android:label="@string/title_activity_signup"
+            android:theme="@style/Theme.RoomFinder" /> <!-- <intent-filter> -->
+        <!-- <action android:name="android.intent.action.MAIN" /> -->
+        <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
+        <!-- </intent-filter> -->
+        <!-- </activity> -->
+        <activity
+            android:name=".view.SignUp"
+            android:exported="false"
             android:label="@string/title_activity_login"
+            android:theme="@style/Theme.RoomFinder" />
+        <activity
+            android:name=".view.MainActivity"
+            android:exported="true"
             android:theme="@style/Theme.RoomFinder">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -28,11 +58,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".MainActivity"
-            android:exported="true"
-            android:label="@string/app_name"
-            android:theme="@style/Theme.RoomFinder"></activity>
     </application>
 
 </manifest>
