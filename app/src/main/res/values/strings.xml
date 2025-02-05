@@ -7,4 +7,5 @@
     <string name="title_activity_request_form">RequestForm</string>
     <string name="title_activity_text_f">TextF</string>
     <string name="title_activity_pending">Pending</string>
+    <string name="title_activity_change_password">ChangePassword</string>
 </resources>

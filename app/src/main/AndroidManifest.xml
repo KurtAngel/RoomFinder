@@ -13,7 +13,13 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.RoomFinder"
-        tools:targetApi="31">
+        tools:targetApi="31"
+        android:name=".RoomFinderApplication">
+        <activity
+            android:name=".view.ChangePassword"
+            android:exported="false"
+            android:label="@string/title_activity_change_password"
+            android:theme="@style/Theme.RoomFinder" />
         <activity
             android:name=".view.Pending"
             android:exported="false"

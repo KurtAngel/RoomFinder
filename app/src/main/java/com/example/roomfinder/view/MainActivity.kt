@@ -7,6 +7,7 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -27,6 +28,7 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.SearchBar
@@ -46,7 +48,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.roomfinder.R
+import com.example.roomfinder.viewmodel.MainViewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -54,8 +58,11 @@ class MainActivity : ComponentActivity() {
         setContent {
             HomeScreen(
                 onClick = { nav ->
-                    if(nav == "Request") {
-                        startActivity(Intent(this, RequestForm::class.java))
+                    when (nav) {
+                        "Request" -> startActivity(Intent(this, RequestForm::class.java))
+                        "Settings" -> startActivity(Intent(this, Settings::class.java))
+                        "Pending" -> startActivity(Intent(this, Pending::class.java))
+                        "Details" -> startActivity(Intent(this, Details::class.java))
                     }
                 }
             )
@@ -65,7 +72,9 @@ class MainActivity : ComponentActivity() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(onClick: (String) -> Unit) {
+fun HomeScreen(onClick: (nav: String) -> Unit) {
+    val viewModel = MainViewModel()
+    val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
     Column (
         modifier = Modifier
             .fillMaxSize()
@@ -154,6 +163,13 @@ fun HomeScreen(onClick: (String) -> Unit) {
                     .size(30.dp)
             )
 
+//            SearchBar(
+//                inputField = {
+//
+//                }
+//            ) {
+//
+//            }
             SearchBar(
                 query = searchInput,
                 onQueryChange = {
@@ -194,27 +210,35 @@ fun HomeScreen(onClick: (String) -> Unit) {
                     }
                     .padding(bottom = 10.dp)
             )
-
-            LazyColumn (
-                modifier = Modifier
-                    .constrainAs(roomScroll) {
-                        top.linkTo(statusTxt.bottom)
-                        start.linkTo(parent.start)
-                        end.linkTo(parent.end)
+                LazyColumn (
+                    modifier = Modifier
+                        .constrainAs(roomScroll) {
+                            top.linkTo(statusTxt.bottom)
+                            start.linkTo(parent.start)
+                            end.linkTo(parent.end)
+                        }
+                        .height(400.dp)
+                        .fillMaxWidth(),
+                ){
+                    item {
+                        if (isLoading){
+                            Box (
+                                contentAlignment = Alignment.Center,
+                                modifier = Modifier.fillMaxWidth().padding(150.dp)
+                            ){
+                                CircularProgressIndicator()
+                            }
+                        } else {
+                            RoomItems(onClick = { nav -> onClick(nav) })
+                            RoomItems(onClick = { nav -> onClick(nav) })
+                            RoomItems(onClick = { nav -> onClick(nav) })
+                            RoomItems(onClick = { nav -> onClick(nav) })
+                            RoomItems(onClick = { nav -> onClick(nav) })
+                            RoomItems(onClick = { nav -> onClick(nav) })
+                            RoomItems(onClick = { nav -> onClick(nav) })
+                        }
                     }
-                    .height(400.dp)
-                    .fillMaxWidth(),
-            ){
-                item {
-                    RoomItems(onClick = { onClick("Request") })
-                    RoomItems(onClick = { onClick("Request") })
-                    RoomItems(onClick = { onClick("Request") })
-                    RoomItems(onClick = { onClick("Request") })
-                    RoomItems(onClick = { onClick("Request") })
-                    RoomItems(onClick = { onClick("Request") })
-                    RoomItems(onClick = { onClick("Request") })
                 }
-            }
 
             Text(
                 text = "Pending Requests:",
@@ -226,7 +250,6 @@ fun HomeScreen(onClick: (String) -> Unit) {
                     }
                     .padding(top = 8.dp, bottom = 12.dp)
             )
-
             LazyColumn (
                 modifier = Modifier
                     .constrainAs(pendingScroll) {
@@ -239,13 +262,22 @@ fun HomeScreen(onClick: (String) -> Unit) {
                 horizontalAlignment = Alignment.CenterHorizontally
             ){
                 item {
-                    PendingList()
-                    PendingList()
-                    PendingList()
-                    PendingList()
-                    PendingList()
-                    PendingList()
-                    PendingList()
+                    if (isLoading){
+                        Box (
+                            contentAlignment = Alignment.Center,
+                            modifier = Modifier.fillMaxWidth().padding(70.dp)
+                        ){
+                            CircularProgressIndicator()
+                        }
+                    } else {
+                        PendingList()
+                        PendingList()
+                        PendingList()
+                        PendingList()
+                        PendingList()
+                        PendingList()
+                        PendingList()
+                    }
                 }
             }
         }
@@ -327,7 +359,7 @@ fun RoomItems(onClick : (String) -> Unit) {
             ){
                 Button(
                     onClick = {
-                        //TODO()
+                        onClick("Details")
                     },
                     colors = ButtonDefaults.buttonColors(containerColor =
                     colorResource(R.color.up_greenBtn)

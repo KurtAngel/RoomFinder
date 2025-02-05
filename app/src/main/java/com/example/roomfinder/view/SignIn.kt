@@ -25,8 +25,6 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.sp
 import com.example.roomfinder.R
-import com.example.roomfinder.viewmodel.LoginState
-import com.example.roomfinder.viewmodel.LoginViewModel
 
 //class SignIn : ComponentActivity() {
 //    override fun onCreate(savedInstanceState: Bundle?) {
@@ -220,24 +218,24 @@ fun SignInScreen(onClick : (String) -> Unit) {
     var isValid by remember { mutableStateOf(true) }
     var errorMessage by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
-    val viewModel: LoginViewModel = LoginViewModel()
-    val loginState by viewModel.loginState.collectAsState()
+//    val viewModel: LoginViewModel = LoginViewModel()
+//    val loginState by viewModel.loginState.collectAsState()
 
 //     Handle login state
-    LaunchedEffect(loginState) {
-        when (loginState) {
-            is LoginState.Success -> {
-                onClick("Home")
-            }
-            is LoginState.Error -> {
-                errorMessage = (loginState as LoginState.Error).message
-                isValid = false
-            }
-            else -> {
-
-            }
-        }
-    }
+//    LaunchedEffect(loginState) {
+//        when (loginState) {
+//            is LoginState.Success -> {
+//                onClick("Home")
+//            }
+//            is LoginState.Error -> {
+//                errorMessage = (loginState as LoginState.Error).message
+//                isValid = false
+//            }
+//            else -> {
+//
+//            }
+//        }
+//    }
 
     fun validateInput(): Boolean {
         return if (email.isEmpty() || password.isEmpty()) {
@@ -358,7 +356,7 @@ fun SignInScreen(onClick : (String) -> Unit) {
         Button(
             onClick = {
                 if (validateInput()) {
-                    viewModel.login(email, email, password)
+//                    viewModel.login(email, email, password)
                 } else {
                     Log.d("Error", "Working")
                 }
@@ -371,7 +369,7 @@ fun SignInScreen(onClick : (String) -> Unit) {
                 contentColor = Color.White
             )
         ) {
-            if (loginState is LoginState.Loading) {
+            if (false) {
                 CircularProgressIndicator(color = Color.White)
             } else {
                 Text("Sign In", fontSize = 16.sp)

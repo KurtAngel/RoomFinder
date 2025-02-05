@@ -3,7 +3,9 @@ package com.example.roomfinder.view
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -22,12 +24,14 @@ import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -42,29 +46,41 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.roomfinder.R
+import com.example.roomfinder.model.CreateRoomRequestRequest
+import com.example.roomfinder.viewmodel.RoomRequestViewModel
+import com.example.roomfinder.session_manager.RoomFinderApplication
 
 class RequestForm : ComponentActivity() {
+    private val viewModel: RoomRequestViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            FormScreen()
+            RequestFormScreen(viewModel) {
+                finish()
+            }
         }
     }
 }
 
-
 @Composable
-@Preview
-fun FormScreen(onClickListener: () -> Unit = {}) {
+fun RequestFormScreen(
+    viewModel: RoomRequestViewModel = RoomRequestViewModel(),
+    onBackClick: () -> Unit
+) {
+    var purpose by remember { mutableStateOf("") }
+    var startTime by remember { mutableStateOf("") }
+    var endTime by remember { mutableStateOf("") }
+    
+    val selectedRoom by viewModel.selectedRoom.collectAsState()
+    val requestStatus by viewModel.requestStatus.collectAsState()
 
-    val isError by remember { mutableStateOf(false) }
-    //parent container
-    Column (
+    Column(
         modifier = Modifier
-            .background(Color.White)
             .fillMaxSize()
-    ){
-        //header title
+            .background(Color.White)
+    ) {
+        // Header
         Row(
             modifier = Modifier
                 .height(89.dp)
@@ -75,111 +91,103 @@ fun FormScreen(onClickListener: () -> Unit = {}) {
         ) {
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                contentDescription = null,
+                contentDescription = "Back",
                 tint = Color.White,
-                modifier = Modifier.padding(start = 12.dp)
+                modifier = Modifier
+                    .padding(start = 12.dp)
+                    .clickable { onBackClick() }
             )
             Text(
-                text = "Request Form",
+                text = "Request Room",
                 fontWeight = FontWeight.Bold,
                 color = Color.White,
-                modifier = Modifier.weight(1f),
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(end = 22.dp),
                 textAlign = TextAlign.Center,
-                fontSize = 36.sp,
+                fontSize = 36.sp
             )
         }
-        Column (
+
+        // Form Content
+        Column(
             modifier = Modifier
-                .padding(top = 50.dp)
-                .fillMaxSize()
-                .background(Color.White),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ){
-            var text by remember { mutableStateOf("") }
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            selectedRoom?.let { room ->
+                Text(
+                    text = "Selected Room: ${room.name}",
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold
+                )
+            }
 
-            //form container
-            Column (
-                modifier = Modifier
-                    .padding(horizontal = 40.dp)
-                    .fillMaxWidth()
-                    .wrapContentHeight()
-                    .background(
-                        color = colorResource(id = R.color.up_itemBg),
-                        shape = RoundedCornerShape(10.dp)
-                    )
-            ) {
-                Column (
-                    modifier = Modifier
-                        .padding(16.dp)
-                ){
-                    Text(
-                        text = "Purpose: ",
-                        fontWeight = FontWeight.Bold
-                    )
-                    OutlinedTextField(
-                        value = text,
-                        onValueChange = {
-                            text = it
-                        },
-                        placeholder = {
-                            Text(
-                                text = "Message..."
+            OutlinedTextField(
+                value = purpose,
+                onValueChange = { purpose = it },
+                label = { Text("Purpose") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            OutlinedTextField(
+                value = startTime,
+                onValueChange = { startTime = it },
+                label = { Text("Start Time") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            OutlinedTextField(
+                value = endTime,
+                onValueChange = { endTime = it },
+                label = { Text("End Time") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Button(
+                onClick = {
+                    selectedRoom?.let { room ->
+                        viewModel.submitRequest(
+                            CreateRoomRequestRequest(
+                                roomId = room.id,
+                                studentId = RoomFinderApplication.instance.sessionManager.userId ?: return@Button,
+                                purpose = purpose,
+                                startingTime = startTime,
+                                endingTime = endTime,
+                                receiver = "admin" // This should be dynamically set based on room admin
                             )
-                        },
-                        supportingText = {
-                            if (isError){
-                                Text(
-                                    text = "Required"
-                                )
-                            }
-                        },
-                        isError = isError,
-                        modifier = Modifier
-                            .background(Color.White)
-                            .fillMaxWidth()
-                        ,
-                        shape = OutlinedTextFieldDefaults.shape,
-                        colors = TextFieldDefaults.colors(
-                            disabledContainerColor = Color.Transparent,
-                            focusedIndicatorColor = Color.Black,
-                            unfocusedIndicatorColor = Color.White,
-                        ),
-                        minLines = 3
-                    )
-
-                    Text(
-                        text = "Available Time:"
-                    )
-                    //selection
-                    Selection("7:30PM-9:00PM")
-                    Selection("7:30PM-9:00PM")
-                    Selection("7:30PM-9:00PM")
-                    Selection("7:30PM-9:00PM")
-
-                    Row(
-                        modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
-                        horizontalArrangement = Arrangement.End
-                    ) {
-                    Button(
-                        onClick = {
-                            //TODO()
-                        },
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = colorResource(id = R.color.up_blueBtn),
-                            contentColor = Color.White
-                        ),
-                        shape = RoundedCornerShape(10.dp),
-                        modifier = Modifier
-                            .height(30.dp)
-                            .wrapContentSize(),
-                        contentPadding = PaddingValues(start = 8.dp, end = 8.dp)
-                    ) {
-                        Text(
-                            text = "Submit",
                         )
                     }
-                    }
+                },
+                modifier = Modifier.fillMaxWidth(),
+                enabled = selectedRoom != null && purpose.isNotBlank() && 
+                         startTime.isNotBlank() && endTime.isNotBlank()
+            ) {
+                Text("Submit Request")
+            }
+
+            when (val status = requestStatus) {
+                is RoomRequestViewModel.RequestStatus.Success -> {
+                    Text(
+                        text = status.message,
+                        color = Color.Green,
+                        modifier = Modifier.fillMaxWidth()
+                    )
                 }
+                is RoomRequestViewModel.RequestStatus.Error -> {
+                    Text(
+                        text = status.message,
+                        color = Color.Red,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+                is RoomRequestViewModel.RequestStatus.Loading -> {
+                    CircularProgressIndicator(
+                        modifier = Modifier.align(Alignment.CenterHorizontally)
+                    )
+                }
+                else -> Unit
             }
         }
     }
@@ -217,6 +225,14 @@ fun Selection(timeTxt: String){
     }
     Spacer(
         modifier = Modifier.padding(bottom = 4.dp)
+    )
+}
+
+@Composable
+@Preview
+fun RequestFormPreview(){
+    RequestFormScreen(
+        onBackClick = {}
     )
 }
 

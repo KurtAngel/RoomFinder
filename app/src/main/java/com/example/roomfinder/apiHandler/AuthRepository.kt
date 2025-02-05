@@ -1,18 +1,18 @@
 package com.example.roomfinder.apiHandler
 
-import com.example.roomfinder.models.LoginRequest
-import com.example.roomfinder.models.LoginResponse
+import com.example.roomfinder.model.CreateStudentRequest
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-class AuthRepository {
+open class AuthRepository {
 
-    suspend fun login(studentNumber: String, email: String, password: String): Result<LoginResponse> {
+    suspend fun login(username: String, studentNumber: String, email: String, password: String): Result<CreateStudentRequest> {
         return withContext(Dispatchers.IO) {
             try {
-                 val apiService = RetrofitClient.apiService
-                val response = apiService.login(
-                    LoginRequest(
+                val apiService = RetrofitClient.apiService
+                val response = apiService.createStudent(
+                    CreateStudentRequest(
+                        username = username,
                         studentNumber = studentNumber,
                         email = email,
                         password = password
@@ -28,7 +28,7 @@ class AuthRepository {
                 }
             } catch (e: Exception) {
                 Result.failure(e)
-            }
+            } as Result<CreateStudentRequest>
         }
     }
 }
