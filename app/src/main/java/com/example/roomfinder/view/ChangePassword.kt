@@ -48,14 +48,13 @@ class ChangePassword : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             ChangePasswordScreen(onClick = {
-
             })
         }
     }
 }
 
 @Composable
-fun ChangePasswordScreen(onClick : () -> Unit) {
+fun ChangePasswordScreen(onClick : (nav: String) -> Unit ={}) {
     var email by remember { mutableStateOf("") }
     Column(
         modifier = Modifier
@@ -101,31 +100,6 @@ fun ChangePasswordScreen(onClick : () -> Unit) {
                     .padding(16.dp)
             ){
                 // Add your pending requests content here
-                Text(
-                    text = "Email",
-                    fontSize = 18.sp,
-                    color = Color.Black
-                )
-                OutlinedTextField(
-                    value = email,
-                    onValueChange = { email = it },
-                    label = { Text(
-                        "Email",
-                        color = Color.Gray
-                    ) },
-                    singleLine = true,
-                    keyboardOptions = KeyboardOptions.Default.copy(
-                        keyboardType = KeyboardType.Number,
-                        imeAction = ImeAction.Next
-                    ),
-                    shape = RoundedCornerShape(10.dp),
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        unfocusedContainerColor = colorResource(id = R.color.up_white),
-                        unfocusedBorderColor = colorResource(id = R.color.up_outlineBg)
-                    )
-                )
                 Text(
                     text = "Old Password",
                     fontSize = 18.sp,
@@ -225,25 +199,6 @@ fun ChangePasswordScreen(onClick : () -> Unit) {
                 Spacer(
                     modifier = Modifier.padding(8.dp)
                 )
-                Button(
-                    onClick = {
-
-                    },
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = colorResource(id = R.color.up_greenBtn),
-                        contentColor = Color.White
-                    ),
-                    shape = RoundedCornerShape(10.dp),
-                    modifier = Modifier
-                        .height(30.dp)
-                        .align(Alignment.CenterHorizontally)
-                        .wrapContentSize(),
-                    contentPadding = PaddingValues(start = 8.dp, end = 8.dp),
-                ) {
-                    Text(
-                        text = "Go Back"
-                    )
-                }
             }
         }
     }

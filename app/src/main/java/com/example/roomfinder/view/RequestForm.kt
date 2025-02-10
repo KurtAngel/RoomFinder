@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -27,9 +26,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -47,8 +44,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.roomfinder.R
 import com.example.roomfinder.model.CreateRoomRequestRequest
+import com.example.roomfinder.RoomFinderApplication
 import com.example.roomfinder.viewmodel.RoomRequestViewModel
-import com.example.roomfinder.session_manager.RoomFinderApplication
 
 class RequestForm : ComponentActivity() {
     private val viewModel: RoomRequestViewModel by viewModels()
@@ -56,17 +53,14 @@ class RequestForm : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            RequestFormScreen(viewModel) {
-                finish()
-            }
+            RequestFormScreen(viewModel)
         }
     }
 }
 
 @Composable
 fun RequestFormScreen(
-    viewModel: RoomRequestViewModel = RoomRequestViewModel(),
-    onBackClick: () -> Unit
+    viewModel: RoomRequestViewModel = RoomRequestViewModel()
 ) {
     var purpose by remember { mutableStateOf("") }
     var startTime by remember { mutableStateOf("") }
@@ -89,21 +83,11 @@ fun RequestFormScreen(
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Icon(
-                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                contentDescription = "Back",
-                tint = Color.White,
-                modifier = Modifier
-                    .padding(start = 12.dp)
-                    .clickable { onBackClick() }
-            )
+
             Text(
                 text = "Request Room",
                 fontWeight = FontWeight.Bold,
                 color = Color.White,
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(end = 22.dp),
                 textAlign = TextAlign.Center,
                 fontSize = 36.sp
             )
@@ -127,44 +111,62 @@ fun RequestFormScreen(
             OutlinedTextField(
                 value = purpose,
                 onValueChange = { purpose = it },
-                label = { Text("Purpose") },
-                modifier = Modifier.fillMaxWidth()
+                label = { Text("Purpose", color = Color.Gray) },
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(10.dp)
             )
 
             OutlinedTextField(
                 value = startTime,
                 onValueChange = { startTime = it },
-                label = { Text("Start Time") },
-                modifier = Modifier.fillMaxWidth()
+                label = { Text("Start Time", color = Color.Gray) },
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(10.dp)
             )
 
             OutlinedTextField(
                 value = endTime,
                 onValueChange = { endTime = it },
-                label = { Text("End Time") },
-                modifier = Modifier.fillMaxWidth()
+                label = { Text("End Time", color = Color.Gray) },
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(10.dp)
             )
 
             Button(
                 onClick = {
                     selectedRoom?.let { room ->
-                        viewModel.submitRequest(
+                        room.id?.let {
                             CreateRoomRequestRequest(
-                                roomId = room.id,
+                                roomId = it,
                                 studentId = RoomFinderApplication.instance.sessionManager.userId ?: return@Button,
                                 purpose = purpose,
                                 startingTime = startTime,
                                 endingTime = endTime,
                                 receiver = "admin" // This should be dynamically set based on room admin
                             )
-                        )
+                        }?.let {
+                            viewModel.submitRequest(
+                                it
+                            )
+                        }
                     }
                 },
-                modifier = Modifier.fillMaxWidth(),
-                enabled = selectedRoom != null && purpose.isNotBlank() && 
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = colorResource(R.color.up_blueBtn),
+                    contentColor = Color.White
+                ),
+                shape = RoundedCornerShape(6.dp),
+                modifier = Modifier
+                    .height(30.dp)
+                    .align(Alignment.CenterHorizontally)
+                    .wrapContentSize(),
+                contentPadding = PaddingValues(start = 8.dp, end = 8.dp),
+                enabled = selectedRoom != null && purpose.isNotBlank() &&
                          startTime.isNotBlank() && endTime.isNotBlank()
             ) {
-                Text("Submit Request")
+                Text(
+                    text = "Submit Request"
+                )
             }
 
             when (val status = requestStatus) {
@@ -231,8 +233,6 @@ fun Selection(timeTxt: String){
 @Composable
 @Preview
 fun RequestFormPreview(){
-    RequestFormScreen(
-        onBackClick = {}
-    )
+    RequestFormScreen()
 }
 

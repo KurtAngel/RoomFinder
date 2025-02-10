@@ -1,11 +1,10 @@
 package com.example.roomfinder.apiHandler
 
 import com.example.roomfinder.model.Admin
+import com.example.roomfinder.model.AuthResponse
 import com.example.roomfinder.model.CreateAdminRequest
 import com.example.roomfinder.model.CreateRoomRequest
 import com.example.roomfinder.model.CreateRoomRequestRequest
-import com.example.roomfinder.model.CreateStudentRequest
-import com.example.roomfinder.model.CreateStudentResponse
 import com.example.roomfinder.model.MessageResponse
 import com.example.roomfinder.model.Room
 import com.example.roomfinder.model.RoomRequest
@@ -17,6 +16,7 @@ import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
+import retrofit2.http.Headers
 import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Path
@@ -24,18 +24,33 @@ import retrofit2.http.Path
 interface ApiService {
 
     // Student Endpoints
+    @POST("student/signup")
+    @Headers("Content-Type: application/json"
+        ,"Accept: application/json")
+    suspend fun createStudent(
+        @Body student: Student
+    ): Response<AuthResponse>
+
+    @POST("student/login")
+    @Headers("Content-Type: application/json"
+        ,"Accept: application/json")
+    suspend fun loginStudent(
+        @Body student: Student
+    ): Response<AuthResponse>
+
+    @Headers("Content-Type: application/json"
+        ,"Accept: application/json")
     @GET("student/{id}")
     suspend fun getStudent(@Path("id") id: Int): Response<Student>
 
     @GET("student")
+    @Headers("Content-Type: application/json"
+        ,"Accept: application/json")
     suspend fun getAllStudents(): Response<List<Student>>
 
-    @POST("student")
-    suspend fun createStudent(
-        @Body student: CreateStudentRequest
-    ): Response<CreateStudentResponse>
-
     @PUT("student/{id}")
+    @Headers("Content-Type: application/json"
+        ,"Accept: application/json")
     suspend fun updateStudent(
         @Path("id") id: Int,
         @Body student: UpdateStudentRequest
@@ -49,6 +64,7 @@ interface ApiService {
     suspend fun getRoom(@Path("id") id: Int): Response<Room>
 
     @GET("room")
+    @Headers("Content-Type: application/json")
     suspend fun getAllRooms(): Response<List<Room>>
 
     @POST("room")

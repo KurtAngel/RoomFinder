@@ -39,7 +39,7 @@ class Details : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            DetailScreen()
+//            DetailScreen()
         }
     }
 }
@@ -60,19 +60,11 @@ fun DetailScreen() {
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Icon(
-                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                contentDescription = "Back",
-                tint = Color.White,
-                modifier = Modifier.padding(start = 12.dp)
-            )
             Text(
                 text = "Details",
                 fontWeight = FontWeight.Bold,
                 color = Color.White,
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(end = 22.dp),
+                modifier = Modifier,
                 textAlign = TextAlign.Center,
                 fontSize = 36.sp
             )
@@ -121,7 +113,7 @@ fun DetailScreen() {
                     )
 
                     Text(
-                        text = "Monitor, Television, Aircon"
+                        text = "Monitor, Television, Air Conditioner"
                     )
                 }
                 Row(

@@ -4,8 +4,10 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -15,6 +17,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -34,40 +37,26 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.roomfinder.R
 import com.example.roomfinder.ui.theme.RoomFinderTheme
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.painterResource
+import com.example.roomfinder.model.Student
 
-class Settings : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContent {
-            SettingsScreen()
-        }
-    }
-}
 
 @Composable
-fun SettingsScreen() {
-    Column (
+fun SettingsScreen(onClick: (nav : String) -> Unit = {}, student: Student) {
+    Column(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.White)
-    ){
+    ) {
         Row(
             modifier = Modifier
                 .height(89.dp)
-                .background(
-                    color = colorResource(id = R.color.up_green)
-                )
+                .background(colorResource(id = R.color.up_green))
                 .fillMaxWidth(),
-            horizontalArrangement = Arrangement.Center, // Center elements horizontally
+            horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Icon(
-                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                contentDescription = null,
-                tint = Color.White,
-                modifier = Modifier.padding(start = 12.dp)
-            )
             Text(
                 text = "Settings",
                 textAlign = TextAlign.Center,
@@ -75,79 +64,81 @@ fun SettingsScreen() {
                 color = Color.White,
                 fontSize = 36.sp,
                 modifier = Modifier
-                    .weight(1f)
-                    .padding(end = 22.dp)
             )
-
         }
-    Column (
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.White)
-            .padding(16.dp)
-    ){
-
-        Column (
+        Column(
             modifier = Modifier
-                .fillMaxHeight(),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ){
-            Column (
+                .fillMaxSize()
+                .background(Color.White)
+                .padding(16.dp)
+        ) {
+            Column(
                 modifier = Modifier
-                    .padding(horizontal = 16.dp)
-                    .padding(bottom = 156.dp)
-                    .background(
-                        color = colorResource(id = R.color.up_itemBg),
-                        shape = RoundedCornerShape(10.dp)
-                    )
-                    .border(1.dp, colorResource(id = R.color.up_outlineBg), RoundedCornerShape(10.dp))
-                    .fillMaxWidth(),
+                    .fillMaxHeight(),
                 verticalArrangement = Arrangement.Center,
-            ){
-                ProfileInfo(text = "Student Name: John Doe")
-                ProfileInfo(text = "Password: ********")
-                ProfileInfo(text = "Student Number: 03-4545-0333112")
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Column(
+                    modifier = Modifier
+                        .padding(horizontal = 16.dp)
+                        .padding(bottom = 156.dp)
+                        .background(
+                            color = colorResource(id = R.color.up_itemBg),
+                            shape = RoundedCornerShape(10.dp)
+                        )
+                        .border(1.dp, colorResource(id = R.color.up_outlineBg), RoundedCornerShape(10.dp))
+                        .fillMaxWidth(),
+                    verticalArrangement = Arrangement.Center,
+                ) {
+                    ProfileInfo(text = "Student Name: ${student.username}")
+                    ProfileInfo(text = "Password: ********")
+                    ProfileInfo(text = "Student Number: ${student.studentNumber}")
 
-                Text(
-                    text = "Phinmaed Account:",
-                    fontSize = 22.sp,
-                    modifier = Modifier.padding(start = 16.dp)
-                )
+                    Text(
+                        text = "Phinmaed Account:",
+                        fontSize = 22.sp,
+                        modifier = Modifier.padding(start = 16.dp)
+                    )
 
-                ProfileInfo(text = "GMAIL: john.cInridge@altostrat.com")
+                    ProfileInfo(text = "GMAIL: ${student.email}", onClick = { nav ->
+                        onClick(nav)
+                    })
+                }
             }
         }
-    }
     }
 }
 
 @Composable
-fun ProfileInfo(text: String) {
-
-    if(text == "Password: ********"){
-        Column (
+fun ProfileInfo(text: String, onClick: (nav: String) -> Unit = {}) {
+    if (text == "Password: ********") {
+        Column(
             modifier = Modifier.padding(horizontal = 16.dp)
-        ){
+        ) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
             ) {
-                Row (
+                Row(
                     modifier = Modifier
-                ){
+                ) {
                     Text(
                         text = text,
                     )
                 }
-                Row (
+                Row(
                     modifier = Modifier
                         .fillMaxWidth(),
                     horizontalArrangement = Arrangement.End,
-                ){
-                    Icon(
-                        imageVector = Icons.Sharp.Edit,
-                        contentDescription = null
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.pencil_edit),
+                        contentDescription = "Edit",
+                        modifier = Modifier
+                            .size(20.dp)
+                            .clickable {
+                                onClick("edit")
+                            }
                     )
                 }
             }
@@ -187,6 +178,16 @@ fun ProfileInfo(text: String) {
 @Composable
 fun GreetingPreview() {
     RoomFinderTheme {
-        SettingsScreen()
+        SettingsScreen(
+            onClick = {
+                //TODO()
+            },
+            student = Student(
+                studentNumber = "123-123",
+                email = "angel@phinmaed.com",
+                password = "123123",
+                username = "kurt"
+            )
+        )
     }
 }

@@ -23,10 +23,10 @@ class MainViewModel : ViewModel() {
 
     private val apiService = RetrofitClient.apiService
 
-    init {
-        loadRooms()
-        loadPendingRequests()
-    }
+//    init {
+//        loadRooms()
+//        loadPendingRequests()
+//    }
     private val _isLoading = MutableStateFlow(false)
     val isLoading = _isLoading
         .onStart {

@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 android {
@@ -69,6 +70,7 @@ dependencies {
     //http client
     implementation(libs.logging.interceptor)
     implementation(libs.okhttp)
+    //retrofit and json response converter
     implementation(libs.retrofit)
     implementation(libs.converter.gson)
 
@@ -85,4 +87,8 @@ dependencies {
 
     //ConstraintLayout
     implementation(libs.androidx.constraintlayout.compose.android)
+
+    //navigation controller
+    implementation(libs.navigation.compose)
+    implementation(libs.kotlinx.serialization.json)
 }

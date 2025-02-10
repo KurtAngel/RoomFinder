@@ -11,7 +11,7 @@ package com.example.roomfinder.model
 // )
 
 data class Room(
-    val id: Int,
+    val id: Int ?= null,
     val name: String,
     val status: String,
     val availability: String,
@@ -24,9 +24,7 @@ data class Room(
 )
 
 data class RoomSchedule(
-    val dayOfWeek: String,
     val startTime: String,
     val endTime: String,
     val purpose: String,
-    val isRecurring: Boolean
 )

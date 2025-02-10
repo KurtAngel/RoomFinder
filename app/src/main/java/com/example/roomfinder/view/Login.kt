@@ -8,31 +8,12 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -43,11 +24,11 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModelProvider
 import com.example.roomfinder.R
@@ -55,54 +36,39 @@ import com.example.roomfinder.model.Student
 import com.example.roomfinder.viewmodel.AuthenticationViewModel
 import com.example.roomfinder.viewmodel.ViewModelFactory
 
-@Preview
-@Composable
-fun DefaultPreview() {
-    SignUpScreen(
-        onClick = {
-            //TODO()
-        },
-        context = LocalContext.current
-    )
-}
-
-class SignUp : ComponentActivity() {
-
+class Login : ComponentActivity() {
     private lateinit var authViewModel: AuthenticationViewModel
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         authViewModel = ViewModelProvider(
             this,
             ViewModelFactory(applicationContext)
         )[AuthenticationViewModel::class.java]
         setContent {
-            SignUpScreen(
+            LoginScreen(
                 onClick = { mode ->
-                    if (mode == "Home") {
+                    if (mode == "Home"){
                         startActivity(Intent(this, Home::class.java))
                         finish()
-                    } else if (mode == "Login") {
-                        startActivity(Intent(this, Login::class.java))
+                    } else if (mode == "SignUp"){
+                        startActivity(Intent(this, SignUp::class.java))
                         finish()
                     }
                 },
-                context = this,
-                authViewModel
+                authViewModel = authViewModel,
+                context = this
             )
         }
     }
 }
 
 @Composable
-fun SignUpScreen(onClick: (String) -> Unit, context: Context, authViewModel: AuthenticationViewModel? = null) {
+fun LoginScreen(onClick : (String) -> Unit, authViewModel: AuthenticationViewModel ?= null, context: Context) {
     var email by remember { mutableStateOf("") }
-    var studentNumber by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var isValid by remember { mutableStateOf(true) }
-    var isLoading by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf("") }
-    var confirmPassword by remember { mutableStateOf("") }
+    var isLoading by remember { mutableStateOf(false) }
 
     fun validateInput(): Boolean {
         return if (email.isEmpty() || password.isEmpty()) {
@@ -117,6 +83,7 @@ fun SignUpScreen(onClick: (String) -> Unit, context: Context, authViewModel: Aut
         }
     }
 
+    // Main layout of the screen
     val bgGradient = Brush.verticalGradient(
         listOf(
             colorResource(id = R.color.white),
@@ -139,7 +106,6 @@ fun SignUpScreen(onClick: (String) -> Unit, context: Context, authViewModel: Aut
             alpha = 0.2f
         )
     }
-    // Main layout of the screen
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -151,7 +117,7 @@ fun SignUpScreen(onClick: (String) -> Unit, context: Context, authViewModel: Aut
             painter = painterResource(id = R.drawable.upang_logo),
             contentDescription = null,
             modifier = Modifier
-                .size(150.dp)
+                .size(200.dp)
         )
 
         Text(
@@ -162,9 +128,10 @@ fun SignUpScreen(onClick: (String) -> Unit, context: Context, authViewModel: Aut
             fontWeight = FontWeight.Bold
         )
 
-        Spacer(modifier = Modifier.height(32.dp))
+        Spacer(modifier = Modifier.height(8.dp))
 
-        // Student Number TextField
+
+        Spacer(modifier = Modifier.height(8.dp))
 
         Column (
             modifier = Modifier
@@ -175,41 +142,24 @@ fun SignUpScreen(onClick: (String) -> Unit, context: Context, authViewModel: Aut
                 )
                 .padding(16.dp)
         ){
-            OutlinedTextField(
-                value = studentNumber,
-                onValueChange = { studentNumber = it },
-                label = {
-                    Text(
-                        "Student Number",
-                    )
-                },
-                singleLine = true,
-                keyboardOptions = KeyboardOptions.Default.copy(
-                    keyboardType = KeyboardType.Number,
-                    imeAction = ImeAction.Next
-                ),
-                shape = RoundedCornerShape(10.dp),
-                modifier = Modifier
-                    .fillMaxWidth()
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
             // Email TextField
             OutlinedTextField(
                 value = email,
-                onValueChange = {
-                    email = it
-                },
-                label = { Text("Email") },
+                onValueChange = { email = it },
+                label = {
+                    Text(
+                        text = "Email",
+                        color = Color.Gray
+                    )
+                        },
                 singleLine = true,
+                isError = !isValid,
                 keyboardOptions = KeyboardOptions.Default.copy(
                     keyboardType = KeyboardType.Email,
                     imeAction = ImeAction.Next
                 ),
                 shape = RoundedCornerShape(10.dp),
-                modifier = Modifier
-                    .fillMaxWidth()
+                modifier = Modifier.fillMaxWidth()
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -218,31 +168,14 @@ fun SignUpScreen(onClick: (String) -> Unit, context: Context, authViewModel: Aut
             OutlinedTextField(
                 value = password,
                 onValueChange = { password = it },
-                label = { Text("Password") },
-                visualTransformation = PasswordVisualTransformation(),
-                keyboardOptions = KeyboardOptions.Default.copy(
-                    keyboardType = KeyboardType.Password,
-                    imeAction = ImeAction.Next
-                ),
-                shape = RoundedCornerShape(10.dp),
-                modifier = Modifier.fillMaxWidth(),
-                trailingIcon = {
-                    Image(
-                        painter = painterResource(id = R.drawable.password_eye),
-                        contentDescription = "Show Password",
-                        modifier = Modifier.size(30.dp)
+                label = {
+                    Text(
+                        text = "Password",
+                        color = Color.Gray
                     )
-                }
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Confirm Password TextField
-            OutlinedTextField(
-                value = confirmPassword,
-                onValueChange = { confirmPassword = it },
-                label = { Text("Confirm Password") },
+                        },
                 visualTransformation = PasswordVisualTransformation(),
+                isError = !isValid,
                 keyboardOptions = KeyboardOptions.Default.copy(
                     keyboardType = KeyboardType.Password,
                     imeAction = ImeAction.Done
@@ -258,37 +191,38 @@ fun SignUpScreen(onClick: (String) -> Unit, context: Context, authViewModel: Aut
                 }
             )
 
+            Spacer(modifier = Modifier.height(16.dp))
+
             // Error message
             if (!isValid) {
                 Text(errorMessage, color = Color.Red, style = MaterialTheme.typography.bodyLarge)
             }
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
             // Sign In Button
             Button(
                 onClick = {
-                    if (validateInput()) {
-                        isLoading = true
-                        val student = Student(
-                            username = email.split("@")[0],
-                            studentNumber = studentNumber,
-                            email = email,
-                            password = password
-                        )
-                        authViewModel?.signUpStudent(
-                            student = student,
-                            onSuccess = {
-                                isLoading = false
-                                context.startActivity(Intent(context, Home::class.java))
-                            },
-                            onError = { error ->
-                                isLoading = false
-                                errorMessage = error
-                                isValid = false
-                            }
-                        )
-                    }
+                    isValid = validateInput()
+                    isLoading = true
+                    val student = Student(
+                        username = email.split("@")[0],
+                        studentNumber = null,
+                        email = email,
+                        password = password
+                    )
+                    authViewModel?.login(
+                        student = student,
+                        onSuccess = {
+                            isLoading = false
+                            context.startActivity(Intent(context, Home::class.java))
+                        },
+                        onError = { error ->
+                            isLoading = false
+                            errorMessage = error
+                            isValid = false
+                        }
+                    )
                 },
                 colors = ButtonDefaults.buttonColors(
                     containerColor = colorResource(id = R.color.green_btn),
@@ -301,16 +235,17 @@ fun SignUpScreen(onClick: (String) -> Unit, context: Context, authViewModel: Aut
                     .wrapContentWidth(),
                 contentPadding = PaddingValues(start = 8.dp, end = 8.dp)
             ) {
-                if (isLoading) {
+                if (isLoading && isValid) {
                     CircularProgressIndicator(
                         color = Color.White,
                         modifier = Modifier.size(24.dp)
                     )
                 } else {
-                    Text("Sign Up", fontSize = 16.sp)
+                    Text("Log In", fontSize = 16.sp)
                 }
             }
         }
+
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -320,17 +255,29 @@ fun SignUpScreen(onClick: (String) -> Unit, context: Context, authViewModel: Aut
             modifier = Modifier.fillMaxWidth().padding(top = 16.dp)
         ) {
             Text(
-                text = "Already have an account?",
+                text = "Don't have an account?",
                 color = Color.White,
                 fontSize = 16.sp
             )
             Text(
-                text = " Log In",
+                text = " Sign Up",
                 color = colorResource(id = R.color.link),
-                modifier = Modifier.clickable { onClick("Login") },
+                modifier = Modifier.clickable { onClick("SignUp") },
                 textDecoration = TextDecoration.Underline,
                 fontSize = 16.sp
             )
         }
     }
+}
+
+@Preview
+@Composable
+fun DefaultPreviews() {
+    LoginScreen(
+        onClick = {
+            //TODO()
+        },
+        context = LocalContext.current,
+        authViewModel = null
+    )
 }

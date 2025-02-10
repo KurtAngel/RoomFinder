@@ -1,9 +1,5 @@
 package com.example.roomfinder.view
 
-import android.content.Intent
-import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -18,7 +14,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
@@ -50,31 +45,18 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.roomfinder.R
+import com.example.roomfinder.asset.RoomList
+import com.example.roomfinder.model.Room
+import com.example.roomfinder.model.Student
 import com.example.roomfinder.viewmodel.MainViewModel
-
-class MainActivity : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            HomeScreen(
-                onClick = { nav ->
-                    when (nav) {
-                        "Request" -> startActivity(Intent(this, RequestForm::class.java))
-                        "Settings" -> startActivity(Intent(this, Settings::class.java))
-                        "Pending" -> startActivity(Intent(this, Pending::class.java))
-                        "Details" -> startActivity(Intent(this, Details::class.java))
-                    }
-                }
-            )
-        }
-    }
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(onClick: (nav: String) -> Unit) {
+fun HomeScreen(onClick: (nav: String, index: Int) -> Unit = { s: String, i: Int -> }, student: Student) {
     val viewModel = MainViewModel()
     val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
+    viewModel.rooms.collectAsStateWithLifecycle()
+
     Column (
         modifier = Modifier
             .fillMaxSize()
@@ -100,15 +82,6 @@ fun HomeScreen(onClick: (nav: String) -> Unit) {
                     .padding(start = 15.dp),
                 fontSize = 16.sp
             )
-
-            Icon(
-                imageVector = Icons.Default.Settings,
-                contentDescription = null,
-                modifier = Modifier
-                    .padding(end = 12.dp)
-                    .size(30.dp),
-                tint = Color.White
-            )
         }
         ConstraintLayout (
             modifier = Modifier
@@ -130,7 +103,7 @@ fun HomeScreen(onClick: (nav: String) -> Unit) {
                 statusTxt) = createRefs()
 
             Text(
-                text = "Albert Einstein",
+                text = student.username ?: "No Name",
                 modifier = Modifier
                     .constrainAs(nameTxt) {
                         top.linkTo(parent.top)
@@ -151,8 +124,9 @@ fun HomeScreen(onClick: (nav: String) -> Unit) {
                     .padding(top = 10.dp, end = 6.dp)
                     .size(30.dp)
             )
-            Icon(
-                imageVector = Icons.Default.Settings,
+
+            Image(
+                painter = painterResource(id = R.drawable.eye_password),
                 contentDescription = null,
                 modifier = Modifier
                     .constrainAs(requestTab) {
@@ -163,13 +137,6 @@ fun HomeScreen(onClick: (nav: String) -> Unit) {
                     .size(30.dp)
             )
 
-//            SearchBar(
-//                inputField = {
-//
-//                }
-//            ) {
-//
-//            }
             SearchBar(
                 query = searchInput,
                 onQueryChange = {
@@ -210,73 +177,32 @@ fun HomeScreen(onClick: (nav: String) -> Unit) {
                     }
                     .padding(bottom = 10.dp)
             )
-                LazyColumn (
-                    modifier = Modifier
-                        .constrainAs(roomScroll) {
-                            top.linkTo(statusTxt.bottom)
-                            start.linkTo(parent.start)
-                            end.linkTo(parent.end)
-                        }
-                        .height(400.dp)
-                        .fillMaxWidth(),
-                ){
-                    item {
-                        if (isLoading){
-                            Box (
-                                contentAlignment = Alignment.Center,
-                                modifier = Modifier.fillMaxWidth().padding(150.dp)
-                            ){
-                                CircularProgressIndicator()
-                            }
-                        } else {
-                            RoomItems(onClick = { nav -> onClick(nav) })
-                            RoomItems(onClick = { nav -> onClick(nav) })
-                            RoomItems(onClick = { nav -> onClick(nav) })
-                            RoomItems(onClick = { nav -> onClick(nav) })
-                            RoomItems(onClick = { nav -> onClick(nav) })
-                            RoomItems(onClick = { nav -> onClick(nav) })
-                            RoomItems(onClick = { nav -> onClick(nav) })
-                        }
-                    }
-                }
-
-            Text(
-                text = "Pending Requests:",
-                fontSize = 16.sp,
-                modifier = Modifier
-                    .constrainAs(pendingTxt) {
-                        start.linkTo(roomScroll.start)
-                        top.linkTo(roomScroll.bottom)
-                    }
-                    .padding(top = 8.dp, bottom = 12.dp)
-            )
+            val roomDetails = RoomList()
             LazyColumn (
                 modifier = Modifier
-                    .constrainAs(pendingScroll) {
-                        top.linkTo(pendingTxt.bottom)
+                    .constrainAs(roomScroll) {
+                        top.linkTo(statusTxt.bottom)
                         start.linkTo(parent.start)
                         end.linkTo(parent.end)
                     }
-                    .height(400.dp)
-                    .fillMaxWidth(),
-                horizontalAlignment = Alignment.CenterHorizontally
+                    .fillMaxSize(),
             ){
                 item {
                     if (isLoading){
                         Box (
                             contentAlignment = Alignment.Center,
-                            modifier = Modifier.fillMaxWidth().padding(70.dp)
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(150.dp)
                         ){
                             CircularProgressIndicator()
                         }
                     } else {
-                        PendingList()
-                        PendingList()
-                        PendingList()
-                        PendingList()
-                        PendingList()
-                        PendingList()
-                        PendingList()
+                        roomDetails.rooms.forEach {
+                            RoomItems(onClick = { nav, index -> onClick(nav, index) }, roomDetails = listOf(it))
+                        }
+
+                        Spacer(modifier = Modifier.padding(bottom = 230.dp))
                     }
                 }
             }
@@ -285,53 +211,8 @@ fun HomeScreen(onClick: (nav: String) -> Unit) {
 }
 
 @Composable
-fun PendingList() {
-    Row (
-        modifier = Modifier
-            .wrapContentHeight()
-            .background(
-                color = colorResource(id = R.color.up_yellow),
-                shape = RoundedCornerShape(6.dp)
-            )
-            .padding(10.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Center
-    ){
-        Column (
-            modifier = Modifier.weight(1f)
-        ){
-            Text(
-                text = "Room: PTC 304"
-            )
-            Text(
-                text = "Time: 12:00PM-1:00PM",
-            )
-        }
+fun RoomItems(onClick : (String, Int) -> Unit, roomDetails: List<Room> = emptyList()) {
 
-        Text(
-            text = "Approved",
-            modifier = Modifier.padding(end = 3.dp)
-        )
-
-        Button(
-            onClick = {
-                //TODO()
-            },
-            modifier = Modifier.height(35.dp)
-        ) {
-            Text(
-                text = "Delete"
-            )
-        }
-    }
-
-    Spacer(
-        modifier = Modifier.padding(bottom = 10.dp)
-    )
-}
-
-@Composable
-fun RoomItems(onClick : (String) -> Unit) {
     Row(
         modifier = Modifier
             .height(100.dp)
@@ -341,66 +222,68 @@ fun RoomItems(onClick : (String) -> Unit) {
             )
             .padding(start = 10.dp)
     ) {
-        Column (
-            modifier = Modifier
-                .padding(top = 10.dp)
-                .weight(1f)
-                .fillMaxSize(),
-            verticalArrangement = Arrangement.Center
-        ){
+        roomDetails.forEachIndexed { index, it ->
             Column (
-                modifier = Modifier.weight(1f)
+                modifier = Modifier
+                    .padding(top = 10.dp)
+                    .weight(1f)
+                    .fillMaxSize(),
+                verticalArrangement = Arrangement.Center
             ){
-                Text("Room: PTC 304")
-                Text("Status: Available")
+                Column (
+                    modifier = Modifier.weight(1f)
+                ){
+                    Text("Room: ${it.name}")
+                    Text("Status: ${it.status}")
+                }
+                Column (
+                    modifier = Modifier.padding(bottom = 10.dp)
+                ){
+                    Button(
+                        onClick = {
+                            onClick("Details", index)
+                        },
+                        colors = ButtonDefaults.buttonColors(containerColor =
+                        colorResource(R.color.up_greenBtn)
+                        ),
+                        shape = RoundedCornerShape(6.dp),
+                        modifier = Modifier
+                            .height(30.dp)
+                            .wrapContentWidth(),
+                        contentPadding = PaddingValues(start = 8.dp, end = 8.dp)
+                    ) {
+                        Text(
+                            text = "More Details",
+                            textAlign = TextAlign.Center,
+                        )
+                    }
+                }
             }
             Column (
-                modifier = Modifier.padding(bottom = 10.dp)
+                modifier = Modifier
+                    .padding(bottom = 10.dp, end = 10.dp)
+                    .fillMaxHeight(),
+                verticalArrangement = Arrangement.Bottom,
+                horizontalAlignment = Alignment.CenterHorizontally
             ){
                 Button(
                     onClick = {
-                        onClick("Details")
+                        onClick("Request", index)
                     },
                     colors = ButtonDefaults.buttonColors(containerColor =
-                    colorResource(R.color.up_greenBtn)
+                    colorResource(R.color.up_blueBtn)
                     ),
                     shape = RoundedCornerShape(6.dp),
                     modifier = Modifier
                         .height(30.dp)
-                        .wrapContentWidth(),
-                    contentPadding = PaddingValues(start = 8.dp, end = 8.dp)
+                        .wrapContentSize(),
+                    contentPadding = PaddingValues(start = 8.dp, end = 8.dp),
                 ) {
                     Text(
-                        text = "More Details",
+                        text = "Request",
                         textAlign = TextAlign.Center,
                     )
                 }
-            }
-        }
-        Column (
-            modifier = Modifier
-                .padding(bottom = 10.dp, end = 10.dp)
-                .fillMaxHeight(),
-            verticalArrangement = Arrangement.Bottom,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ){
-            Button(
-                onClick = {
-                    onClick("Request")
-                },
-                colors = ButtonDefaults.buttonColors(containerColor =
-                colorResource(R.color.up_blueBtn)
-                ),
-                shape = RoundedCornerShape(6.dp),
-                modifier = Modifier
-                    .height(30.dp)
-                    .wrapContentSize(),
-                contentPadding = PaddingValues(start = 8.dp, end = 8.dp),
-            ) {
-                Text(
-                    text = "Request",
-                    textAlign = TextAlign.Center,
-                )
             }
         }
     }
@@ -410,9 +293,14 @@ fun RoomItems(onClick : (String) -> Unit) {
 @Composable
 @Preview
 fun Preview() {
-    HomeScreen(onClick = {
+    HomeScreen(onClick = { nav, index ->
 
-    })
+    }, student = Student(
+        username = "Angel",
+        studentNumber = "212-12",
+        email = "",
+        password = "0"
+    ))
 }
 
 

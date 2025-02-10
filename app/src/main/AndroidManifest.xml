@@ -5,25 +5,32 @@
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
+        android:name=".RoomFinderApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:networkSecurityConfig="@xml/network_security_config"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.RoomFinder"
-        tools:targetApi="31"
-        android:name=".RoomFinderApplication">
+        tools:targetApi="31">
+        <activity
+            android:name=".view.Home"
+            android:exported="true"
+            android:label="@string/title_activity_home"
+            android:theme="@style/Theme.RoomFinder" />
+<!--            <intent-filter>-->
+<!--                <action android:name="android.intent.action.MAIN" />-->
+
+<!--                <category android:name="android.intent.category.LAUNCHER" />-->
+<!--            </intent-filter>-->
+<!--        </activity>-->
         <activity
             android:name=".view.ChangePassword"
             android:exported="false"
             android:label="@string/title_activity_change_password"
-            android:theme="@style/Theme.RoomFinder" />
-        <activity
-            android:name=".view.Pending"
-            android:exported="false"
-            android:label="@string/title_activity_pending"
             android:theme="@style/Theme.RoomFinder" />
         <activity
             android:name=".view.RequestForm"
@@ -36,27 +43,9 @@
             android:label="@string/title_activity_detail"
             android:theme="@style/Theme.RoomFinder" />
         <activity
-            android:name=".view.Settings"
-            android:exported="false"
-            android:label="@string/title_activity_settings"
-            android:theme="@style/Theme.RoomFinder" />
-        <activity
-            android:name=".view.SignIn"
+            android:name=".view.SignUp"
             android:exported="true"
             android:label="@string/title_activity_signup"
-            android:theme="@style/Theme.RoomFinder" /> <!-- <intent-filter> -->
-        <!-- <action android:name="android.intent.action.MAIN" /> -->
-        <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
-        <!-- </intent-filter> -->
-        <!-- </activity> -->
-        <activity
-            android:name=".view.SignUp"
-            android:exported="false"
-            android:label="@string/title_activity_login"
-            android:theme="@style/Theme.RoomFinder" />
-        <activity
-            android:name=".view.MainActivity"
-            android:exported="true"
             android:theme="@style/Theme.RoomFinder">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -64,6 +53,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".view.Login"
+            android:exported="false"
+            android:label="@string/title_activity_login"
+            android:theme="@style/Theme.RoomFinder" />
     </application>
 
 </manifest>
