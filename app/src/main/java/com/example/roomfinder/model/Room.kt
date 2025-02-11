@@ -1,15 +1,9 @@
 package com.example.roomfinder.model
 
-// data class Room(
-//     val id: Int,
-//     val name: String,
-//     val status: String,
-//     val availability: String,
-//     val equipment: String,
-//     val capacity: Int,
-//     val room_type: String
-// )
+import kotlinx.serialization.Contextual
+import kotlinx.serialization.Serializable
 
+@Serializable
 data class Room(
     val id: Int ?= null,
     val name: String,
@@ -22,7 +16,7 @@ data class Room(
     val floor: Int,
     val schedule: List<RoomSchedule> = emptyList()
 )
-
+@Serializable
 data class RoomSchedule(
     val startTime: String,
     val endTime: String,

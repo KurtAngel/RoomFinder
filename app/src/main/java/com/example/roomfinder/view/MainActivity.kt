@@ -52,7 +52,7 @@ import com.example.roomfinder.viewmodel.MainViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(onClick: (nav: String, index: Int) -> Unit = { s: String, i: Int -> }, student: Student) {
+fun HomeScreen(onClick: (nav: String, room: Room) -> Unit, student: Student) {
     val viewModel = MainViewModel()
     val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
     viewModel.rooms.collectAsStateWithLifecycle()
@@ -60,7 +60,7 @@ fun HomeScreen(onClick: (nav: String, index: Int) -> Unit = { s: String, i: Int 
     Column (
         modifier = Modifier
             .fillMaxSize()
-    ){
+    ) {
         Row(
             modifier = Modifier
                 .background(
@@ -94,11 +94,8 @@ fun HomeScreen(onClick: (nav: String, index: Int) -> Unit = { s: String, i: Int 
             val (nameTxt,
                 settingIcon,
                 searchBar,
-                pendingTxt,
-                sortTxt,
                 roomScroll,
-                pendingScroll,
-                roomTab,
+                emailTxt,
                 requestTab,
                 statusTxt) = createRefs()
 
@@ -113,16 +110,14 @@ fun HomeScreen(onClick: (nav: String, index: Int) -> Unit = { s: String, i: Int 
                 fontSize = 20.sp
             )
 
-            Icon(
-                imageVector = Icons.Default.Settings,
-                contentDescription = null,
+            Text(
+                text = student.email,
+                color = Color.Gray,
                 modifier = Modifier
-                    .constrainAs(settingIcon) {
-                        top.linkTo(nameTxt.top)
-                        end.linkTo(requestTab.start)
+                    .constrainAs(emailTxt) {
+                        top.linkTo(nameTxt.bottom)
+                        start.linkTo(nameTxt.start)
                     }
-                    .padding(top = 10.dp, end = 6.dp)
-                    .size(30.dp)
             )
 
             Image(
@@ -152,6 +147,7 @@ fun HomeScreen(onClick: (nav: String, index: Int) -> Unit = { s: String, i: Int 
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 12.dp)
+                    .padding(top = 5.dp)
                     .constrainAs(searchBar) {
                         top.linkTo(nameTxt.bottom)
                         start.linkTo(parent.start)
@@ -199,7 +195,7 @@ fun HomeScreen(onClick: (nav: String, index: Int) -> Unit = { s: String, i: Int 
                         }
                     } else {
                         roomDetails.rooms.forEach {
-                            RoomItems(onClick = { nav, index -> onClick(nav, index) }, roomDetails = listOf(it))
+                            RoomItems(onClick = { nav, room -> onClick(nav, room) }, roomDetails = listOf(it))
                         }
 
                         Spacer(modifier = Modifier.padding(bottom = 230.dp))
@@ -211,7 +207,7 @@ fun HomeScreen(onClick: (nav: String, index: Int) -> Unit = { s: String, i: Int 
 }
 
 @Composable
-fun RoomItems(onClick : (String, Int) -> Unit, roomDetails: List<Room> = emptyList()) {
+fun RoomItems(onClick : (String, Room) -> Unit, roomDetails: List<Room> = emptyList()) {
 
     Row(
         modifier = Modifier
@@ -241,7 +237,7 @@ fun RoomItems(onClick : (String, Int) -> Unit, roomDetails: List<Room> = emptyLi
                 ){
                     Button(
                         onClick = {
-                            onClick("Details", index)
+                            onClick("Details", roomDetails[index])
                         },
                         colors = ButtonDefaults.buttonColors(containerColor =
                         colorResource(R.color.up_greenBtn)
@@ -268,7 +264,7 @@ fun RoomItems(onClick : (String, Int) -> Unit, roomDetails: List<Room> = emptyLi
             ){
                 Button(
                     onClick = {
-                        onClick("Request", index)
+                        onClick("Request", roomDetails[index])
                     },
                     colors = ButtonDefaults.buttonColors(containerColor =
                     colorResource(R.color.up_blueBtn)
@@ -298,7 +294,7 @@ fun Preview() {
     }, student = Student(
         username = "Angel",
         studentNumber = "212-12",
-        email = "",
+        email = "angel@phinmaed.com",
         password = "0"
     ))
 }

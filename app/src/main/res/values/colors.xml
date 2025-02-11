@@ -20,5 +20,11 @@
     <color name="gradient">#246B2C</color>
     <color name="link">#00B7FF</color>
     <color name="green_btn">#62ED65</color>
+    <color name="green_ind">#24BE29</color>
+    <color name="red_ind">#DB4B4B</color>
+    <color name="yellow_ind">#FFEB3B</color>
+    <color name="startTime_ind">#10DA24</color>
+    <color name="endTime_ind">#FF9090</color>
+    <color name="active_btn">#415CDB</color>
 
 </resources>

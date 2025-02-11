@@ -3,7 +3,6 @@ package com.example.roomfinder.view
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -14,7 +13,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
@@ -41,21 +39,24 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.roomfinder.R
 import com.example.roomfinder.view.ui.theme.RoomFinderTheme
+import kotlin.coroutines.coroutineContext
 
 class ChangePassword : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         setContent {
             ChangePasswordScreen(onClick = {
-            })
+                finish()
+            }
+            )
         }
     }
 }
 
 @Composable
-fun ChangePasswordScreen(onClick : (nav: String) -> Unit ={}) {
-    var email by remember { mutableStateOf("") }
+fun ChangePasswordScreen(onClick : () -> Unit ={}) {
+    var newPassword by remember { mutableStateOf("") }
+    var oldPassword by remember { mutableStateOf("") }
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -89,6 +90,7 @@ fun ChangePasswordScreen(onClick : (nav: String) -> Unit ={}) {
             modifier = Modifier
                 .fillMaxSize()
                 .padding(16.dp)
+                .padding(top = 100.dp)
         ) {
             Column (
                 modifier = Modifier
@@ -106,8 +108,8 @@ fun ChangePasswordScreen(onClick : (nav: String) -> Unit ={}) {
                     color = Color.Black
                 )
                 OutlinedTextField(
-                    value = email,
-                    onValueChange = { email = it },
+                    value = oldPassword,
+                    onValueChange = { oldPassword = it },
                     label = { Text(
                         "Old Password",
                         color = Color.Gray
@@ -119,6 +121,7 @@ fun ChangePasswordScreen(onClick : (nav: String) -> Unit ={}) {
                     ),
                     shape = RoundedCornerShape(10.dp),
                     modifier = Modifier
+                        .padding(bottom = 16.dp)
                         .fillMaxWidth(),
                     colors = OutlinedTextFieldDefaults.colors(
                         unfocusedContainerColor = colorResource(id = R.color.up_white),
@@ -131,8 +134,8 @@ fun ChangePasswordScreen(onClick : (nav: String) -> Unit ={}) {
                     color = Color.Black
                 )
                 OutlinedTextField(
-                    value = email,
-                    onValueChange = { email = it },
+                    value = newPassword,
+                    onValueChange = { newPassword = it },
                     label = { Text(
                         "New Password",
                         color = Color.Gray
@@ -144,6 +147,7 @@ fun ChangePasswordScreen(onClick : (nav: String) -> Unit ={}) {
                     ),
                     shape = RoundedCornerShape(10.dp),
                     modifier = Modifier
+                        .padding(bottom = 16.dp)
                         .fillMaxWidth(),
                     colors = OutlinedTextFieldDefaults.colors(
                         unfocusedContainerColor = colorResource(id = R.color.up_white),
@@ -156,8 +160,8 @@ fun ChangePasswordScreen(onClick : (nav: String) -> Unit ={}) {
                     color = Color.Black
                 )
                 OutlinedTextField(
-                    value = email,
-                    onValueChange = { email = it },
+                    value = newPassword,
+                    onValueChange = { newPassword = it },
                     label = { Text(
                         "Confirm Password",
                         color = Color.Gray
@@ -199,6 +203,25 @@ fun ChangePasswordScreen(onClick : (nav: String) -> Unit ={}) {
                 Spacer(
                     modifier = Modifier.padding(8.dp)
                 )
+                Button(
+                    onClick = {
+                        onClick()
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = colorResource(id = R.color.up_greenBtn),
+                        contentColor = Color.White
+                    ),
+                    shape = RoundedCornerShape(10.dp),
+                    modifier = Modifier
+                        .height(30.dp)
+                        .align(Alignment.CenterHorizontally)
+                        .wrapContentSize(),
+                    contentPadding = PaddingValues(start = 8.dp, end = 8.dp),
+                ) {
+                    Text(
+                        text = "Back"
+                    )
+                }
             }
         }
     }

@@ -3,17 +3,37 @@ package com.example.roomfinder.view
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Patterns
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -24,35 +44,49 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModelProvider
 import com.example.roomfinder.R
 import com.example.roomfinder.model.Student
 import com.example.roomfinder.viewmodel.AuthenticationViewModel
 import com.example.roomfinder.viewmodel.ViewModelFactory
+import com.example.roomfinder.RoomFinderApplication
 
 class Login : ComponentActivity() {
     private lateinit var authViewModel: AuthenticationViewModel
+    
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         authViewModel = ViewModelProvider(
             this,
             ViewModelFactory(applicationContext)
         )[AuthenticationViewModel::class.java]
+
+        // Check if token exists and is valid
+        if (authViewModel.studentRepository.authToken?.isNotEmpty() == true) {
+            // Clear any existing tokens on app start
+            authViewModel.studentRepository.clearToken()
+            RoomFinderApplication.instance.sessionManager.clearSession()
+        }
+
         setContent {
             LoginScreen(
                 onClick = { mode ->
-                    if (mode == "Home"){
-                        startActivity(Intent(this, Home::class.java))
-                        finish()
-                    } else if (mode == "SignUp"){
-                        startActivity(Intent(this, SignUp::class.java))
-                        finish()
+                    when (mode) {
+                        "Home" -> {
+                            startActivity(Intent(this, Home::class.java))
+                            finish()
+                        }
+                        "SignUp" -> {
+                            startActivity(Intent(this, SignUp::class.java))
+                            finish()
+                        }
                     }
                 },
                 authViewModel = authViewModel,
@@ -74,7 +108,7 @@ fun LoginScreen(onClick : (String) -> Unit, authViewModel: AuthenticationViewMod
         return if (email.isEmpty() || password.isEmpty()) {
             errorMessage = "Please fill in both fields."
             false
-        } else if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+        } else if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
             errorMessage = "Please enter a valid email."
             false
         } else {
@@ -110,7 +144,7 @@ fun LoginScreen(onClick : (String) -> Unit, authViewModel: AuthenticationViewMod
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Spacer(modifier = Modifier.height(24.dp))
         Image(
@@ -159,11 +193,16 @@ fun LoginScreen(onClick : (String) -> Unit, authViewModel: AuthenticationViewMod
                     imeAction = ImeAction.Next
                 ),
                 shape = RoundedCornerShape(10.dp),
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = Color.Black,
+                    focusedLabelColor = Color.Black,
+                )
             )
 
             Spacer(modifier = Modifier.height(16.dp))
 
+            var passwordVisible by remember { mutableStateOf(false) }
             // Password TextField
             OutlinedTextField(
                 value = password,
@@ -173,8 +212,8 @@ fun LoginScreen(onClick : (String) -> Unit, authViewModel: AuthenticationViewMod
                         text = "Password",
                         color = Color.Gray
                     )
-                        },
-                visualTransformation = PasswordVisualTransformation(),
+                },
+                visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                 isError = !isValid,
                 keyboardOptions = KeyboardOptions.Default.copy(
                     keyboardType = KeyboardType.Password,
@@ -183,12 +222,21 @@ fun LoginScreen(onClick : (String) -> Unit, authViewModel: AuthenticationViewMod
                 shape = RoundedCornerShape(10.dp),
                 modifier = Modifier.fillMaxWidth(),
                 trailingIcon = {
+                    val icon = if (passwordVisible) R.drawable.password_eye else R.drawable.password_eye_close
                     Image(
-                        painter = painterResource(id = R.drawable.password_eye),
+                        painter = painterResource(id = icon),
                         contentDescription = "Show Password",
-                        modifier = Modifier.size(30.dp)
+                        modifier = Modifier
+                            .size(30.dp)
+                            .clickable {
+                                passwordVisible = !passwordVisible
+                            }
                     )
-                }
+                },
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = Color.Black,
+                    focusedLabelColor = Color.Black,
+                )
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -215,7 +263,7 @@ fun LoginScreen(onClick : (String) -> Unit, authViewModel: AuthenticationViewMod
                         student = student,
                         onSuccess = {
                             isLoading = false
-                            context.startActivity(Intent(context, Home::class.java))
+                            onClick("Home")
                         },
                         onError = { error ->
                             isLoading = false
@@ -246,9 +294,7 @@ fun LoginScreen(onClick : (String) -> Unit, authViewModel: AuthenticationViewMod
             }
         }
 
-
         Spacer(modifier = Modifier.height(16.dp))
-
         // Sign Up link
         Row(
             horizontalArrangement = Arrangement.Center,

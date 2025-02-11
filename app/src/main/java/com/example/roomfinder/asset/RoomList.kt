@@ -17,8 +17,13 @@ data class RoomList(
             floor = 4,
             schedule = listOf(
                 RoomSchedule(
-                    startTime = "8:00",
-                    endTime = "9:00",
+                    startTime = "8:00am",
+                    endTime = "9:00am",
+                    purpose = "For Practice"
+                ),
+                RoomSchedule(
+                    startTime = "9:00am",
+                    endTime = "10:00am",
                     purpose = "For Practice"
                 )
             )
@@ -35,8 +40,8 @@ data class RoomList(
             floor = 4,
             schedule = listOf(
                 RoomSchedule(
-                    startTime = "8:00",
-                    endTime = "9:00",
+                    startTime = "8:00am",
+                    endTime = "9:00am",
                     purpose = "For Practice"
                 )
             )
@@ -53,8 +58,8 @@ data class RoomList(
             floor = 4,
             schedule = listOf(
                 RoomSchedule(
-                    startTime = "8:00",
-                    endTime = "9:00",
+                    startTime = "8:00am",
+                    endTime = "9:00am",
                     purpose = "For Practice"
                 )
             )
@@ -71,8 +76,8 @@ data class RoomList(
             floor = 4,
             schedule = listOf(
                 RoomSchedule(
-                    startTime = "9:00",
-                    endTime = "10:00",
+                    startTime = "9:00am",
+                    endTime = "10:00am",
                     purpose = "Lecture"
                 )
             )
@@ -89,13 +94,13 @@ data class RoomList(
             floor = 4,
             schedule = listOf(
                 RoomSchedule(
-                    startTime = "10:00",
-                    endTime = "12:00",
+                    startTime = "10:00am",
+                    endTime = "12:00pm",
                     purpose = "Meeting"
                 ),
                 RoomSchedule(
-                    startTime = "13:00",
-                    endTime = "15:00",
+                    startTime = "1:00pm",
+                    endTime = "3:00pm",
                     purpose = "Team Discussion"
                 )
             )
@@ -112,8 +117,8 @@ data class RoomList(
             floor = 4,
             schedule = listOf(
                 RoomSchedule(
-                    startTime = "14:00",
-                    endTime = "16:00",
+                    startTime = "2:00pm",
+                    endTime = "4:00pm",
                     purpose = "Seminar"
                 )
             )
@@ -130,8 +135,8 @@ data class RoomList(
             floor = 4,
             schedule = listOf(
                 RoomSchedule(
-                    startTime = "15:00",
-                    endTime = "16:00",
+                    startTime = "3:00pm",
+                    endTime = "6:00pm",
                     purpose = "Workshop"
                 )
             )
@@ -149,8 +154,8 @@ data class RoomList(
             floor = 4,
             schedule = listOf(
                 RoomSchedule(
-                    startTime = "8:00",
-                    endTime = "9:00",
+                    startTime = "8:00am",
+                    endTime = "9:00am",
                     purpose = "Lecture"
                 )
             )
@@ -167,8 +172,8 @@ data class RoomList(
             floor = 4,
             schedule = listOf(
                 RoomSchedule(
-                    startTime = "9:00",
-                    endTime = "10:00",
+                    startTime = "9:00am",
+                    endTime = "10:00am",
                     purpose = "Lab Session"
                 )
             )
@@ -185,8 +190,8 @@ data class RoomList(
             floor = 4,
             schedule = listOf(
                 RoomSchedule(
-                    startTime = "10:00",
-                    endTime = "12:00",
+                    startTime = "10:00am",
+                    endTime = "12:00pm",
                     purpose = "Seminar"
                 )
             )
@@ -203,8 +208,8 @@ data class RoomList(
             floor = 4,
             schedule = listOf(
                 RoomSchedule(
-                    startTime = "12:00",
-                    endTime = "14:00",
+                    startTime = "12:00pm",
+                    endTime = "2:00pm",
                     purpose = "Conference"
                 )
             )
@@ -221,8 +226,8 @@ data class RoomList(
             floor = 4,
             schedule = listOf(
                 RoomSchedule(
-                    startTime = "14:00",
-                    endTime = "16:00",
+                    startTime = "2:00pm",
+                    endTime = "4:00pm",
                     purpose = "Lab Session"
                 )
             )
@@ -239,8 +244,8 @@ data class RoomList(
             floor = 4,
             schedule = listOf(
                 RoomSchedule(
-                    startTime = "16:00",
-                    endTime = "17:00",
+                    startTime = "4:00pm",
+                    endTime = "5:00pm",
                     purpose = "Workshop"
                 )
             )
@@ -257,8 +262,8 @@ data class RoomList(
             floor = 4,
             schedule = listOf(
                 RoomSchedule(
-                    startTime = "17:00",
-                    endTime = "18:00",
+                    startTime = "5:00pm",
+                    endTime = "6:00pm",
                     purpose = "Lecture"
                 )
             )
@@ -275,8 +280,8 @@ data class RoomList(
             floor = 4,
             schedule = listOf(
                 RoomSchedule(
-                    startTime = "18:00",
-                    endTime = "20:00",
+                    startTime = "6:00pm",
+                    endTime = "8:00pm",
                     purpose = "Board Meeting"
                 )
             )
@@ -293,8 +298,8 @@ data class RoomList(
             floor = 4,
             schedule = listOf(
                 RoomSchedule(
-                    startTime = "20:00",
-                    endTime = "22:00",
+                    startTime = "8:00pm",
+                    endTime = "10:00pm",
                     purpose = "Seminar"
                 )
             )
@@ -311,8 +316,8 @@ data class RoomList(
             floor = 4,
             schedule = listOf(
                 RoomSchedule(
-                    startTime = "22:00",
-                    endTime = "23:00",
+                    startTime = "10:00pm",
+                    endTime = "11:00pm",
                     purpose = "Practice"
                 )
             )
@@ -329,8 +334,8 @@ data class RoomList(
             floor = 4,
             schedule = listOf(
                 RoomSchedule(
-                    startTime = "23:00",
-                    endTime = "01:00",
+                    startTime = "11:00am",
+                    endTime = "01:00am",
                     purpose = "Lecture"
                 )
             )
@@ -347,8 +352,8 @@ data class RoomList(
             floor = 4,
             schedule = listOf(
                 RoomSchedule(
-                    startTime = "01:00",
-                    endTime = "03:00",
+                    startTime = "01:00am",
+                    endTime = "03:00am",
                     purpose = "Meeting"
                 )
             )
@@ -365,8 +370,8 @@ data class RoomList(
             floor = 4,
             schedule = listOf(
                 RoomSchedule(
-                    startTime = "03:00",
-                    endTime = "05:00",
+                    startTime = "03:00pm",
+                    endTime = "05:00pm",
                     purpose = "Workshop"
                 )
             )

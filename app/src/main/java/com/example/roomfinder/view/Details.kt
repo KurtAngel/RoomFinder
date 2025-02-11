@@ -32,6 +32,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.roomfinder.R
+import com.example.roomfinder.asset.RoomList
+import com.example.roomfinder.model.Room
+import com.example.roomfinder.model.RoomSchedule
 import com.example.roomfinder.ui.theme.RoomFinderTheme
 
 class Details : ComponentActivity() {
@@ -45,7 +48,7 @@ class Details : ComponentActivity() {
 }
 
 @Composable
-fun DetailScreen() {
+fun DetailScreen(details: Room) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -79,7 +82,7 @@ fun DetailScreen() {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = "PTC 405",
+                text = details.name,
                 fontWeight = FontWeight.Bold,
                 fontSize = 20.sp,
                 modifier = Modifier.padding(top = 10.dp)
@@ -98,44 +101,52 @@ fun DetailScreen() {
 
                 ) {
                     Text(
-                        text = "Availability:"
+                        text = "Availability: ",
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.weight(1f)
                     )
 
                     Text(
-                        text = "Open"
-                    )
-                }
-                Row(
-
-                ) {
-                    Text(
-                        text = "Equipment:"
-                    )
-
-                    Text(
-                        text = "Monitor, Television, Air Conditioner"
+                        text = details.availability
                     )
                 }
                 Row(
 
                 ) {
                     Text(
-                        text = "Capacity:"
+                        text = "Equipment: ",
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.weight(1f)
                     )
 
                     Text(
-                        text = "45"
+                        text = details.equipment
                     )
                 }
                 Row(
 
                 ) {
                     Text(
-                        text = "Room Type: "
+                        text = "Capacity: ",
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.weight(1f)
                     )
 
                     Text(
-                        text = "Lecture Room"
+                        text = details.capacity.toString()
+                    )
+                }
+                Row(
+
+                ) {
+                    Text(
+                        text = "Room Type: ",
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.weight(1f)
+                    )
+
+                    Text(
+                        text = details.roomType
                     )
                 }
 
@@ -143,7 +154,8 @@ fun DetailScreen() {
 
                 ){
                     Text(
-                        text = "Schedule(s):"
+                        text = "Schedule(s):",
+                        fontWeight = FontWeight.Bold
                     )
                     Row(
                         modifier = Modifier
@@ -151,25 +163,26 @@ fun DetailScreen() {
                             .padding(bottom = 20.dp),
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        Column (
-                        ){
-                            Text(
-                                text = "Time",
-                                modifier = Modifier.align(Alignment.CenterHorizontally)
-                            )
+                            Column (
+                            ){
+                                Text(
+                                    text = "Time",
+                                    fontWeight = FontWeight.Bold,
+                                    modifier = Modifier.align(Alignment.CenterHorizontally)
+                                )
+                                details.schedule.forEach{
 
-                            Text(
-                                text = "7:30 am - 9:00 am"
-                            )
-                            Text(
-                                text = "9:00 am - 10:30 am"
-                            )
+                                Text(
+                                    text = it.startTime + " - " + it.endTime
+                                )
+                            }
                         }
                         Column (
                             horizontalAlignment = Alignment.CenterHorizontally
                         ){
                             Text(
-                                text = "Block"
+                                text = "Block",
+                                fontWeight = FontWeight.Bold
                             )
                             Text(
                                 text = "Block 5"
@@ -188,7 +201,7 @@ fun DetailScreen() {
                         containerColor = colorResource(id = R.color.up_blueBtn),
                         contentColor = Color.White
                     ),
-                    shape = RoundedCornerShape(10.dp),
+                    shape = RoundedCornerShape(6.dp),
                     modifier = Modifier
                         .height(30.dp)
                         .align(Alignment.End)
@@ -196,7 +209,8 @@ fun DetailScreen() {
                     contentPadding = PaddingValues(start = 8.dp, end = 8.dp),
                 ) {
                     Text(
-                        text = "Send Request"
+                        text = "Send Request",
+                        fontWeight = FontWeight.Light
                     )
                 }
             }
@@ -208,6 +222,30 @@ fun DetailScreen() {
 @Composable
 fun DetailScreenPreview() {
     RoomFinderTheme {
-        DetailScreen()
+        DetailScreen(
+            details = Room(
+                id = 2,
+                name = "TODO()",
+                status = "TODO()",
+                availability = "TODO()",
+                equipment = "TODO()",
+                capacity = 2,
+                roomType = "TODO()",
+                building = "TODO()",
+                floor = 2,
+                schedule = listOf(
+                    RoomSchedule(
+                        startTime = "TODO()",
+                        endTime = "TODO()",
+                        purpose = "TODO()"
+                    ),
+                    RoomSchedule(
+                        startTime = "TODO()",
+                        endTime = "TODO()",
+                        purpose = "TODO()"
+                    )
+                )
+            )
+        )
     }
 }

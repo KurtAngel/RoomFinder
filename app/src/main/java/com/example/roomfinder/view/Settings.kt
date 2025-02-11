@@ -1,15 +1,13 @@
 package com.example.roomfinder.view
 
-import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
+import android.content.Intent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -18,32 +16,30 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.sharp.Edit
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.roomfinder.R
-import com.example.roomfinder.ui.theme.RoomFinderTheme
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.res.painterResource
 import com.example.roomfinder.model.Student
+import com.example.roomfinder.ui.theme.RoomFinderTheme
 
 
 @Composable
-fun SettingsScreen(onClick: (nav : String) -> Unit = {}, student: Student) {
+fun SettingsScreen(onClick: (nav: String) -> Unit = {}, student: Student) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -86,12 +82,16 @@ fun SettingsScreen(onClick: (nav : String) -> Unit = {}, student: Student) {
                             color = colorResource(id = R.color.up_itemBg),
                             shape = RoundedCornerShape(10.dp)
                         )
-                        .border(1.dp, colorResource(id = R.color.up_outlineBg), RoundedCornerShape(10.dp))
+                        .border(
+                            1.dp,
+                            colorResource(id = R.color.up_outlineBg),
+                            RoundedCornerShape(10.dp)
+                        )
                         .fillMaxWidth(),
                     verticalArrangement = Arrangement.Center,
                 ) {
                     ProfileInfo(text = "Student Name: ${student.username}")
-                    ProfileInfo(text = "Password: ********")
+                    PasswordLine(text = "Password: ********", onClick = { nav -> onClick(nav)})
                     ProfileInfo(text = "Student Number: ${student.studentNumber}")
 
                     Text(
@@ -103,6 +103,26 @@ fun SettingsScreen(onClick: (nav : String) -> Unit = {}, student: Student) {
                     ProfileInfo(text = "GMAIL: ${student.email}", onClick = { nav ->
                         onClick(nav)
                     })
+                    Button(
+                        onClick = {
+                            onClick("Log Out")
+                        },
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = colorResource(R.color.up_blueBtn)
+                        ),
+                        shape = RoundedCornerShape(6.dp),
+                        modifier = Modifier
+                            .padding(16.dp)
+                            .height(30.dp)
+                            .align(Alignment.End)
+                            .wrapContentSize(),
+                        contentPadding = PaddingValues(start = 8.dp, end = 8.dp),
+                    ) {
+                        Text(
+                            text = "Log Out",
+                            fontSize = 14.sp
+                        )
+                    }
                 }
             }
         }
@@ -110,67 +130,75 @@ fun SettingsScreen(onClick: (nav : String) -> Unit = {}, student: Student) {
 }
 
 @Composable
-fun ProfileInfo(text: String, onClick: (nav: String) -> Unit = {}) {
-    if (text == "Password: ********") {
-        Column(
-            modifier = Modifier.padding(horizontal = 16.dp)
+fun PasswordLine(text: String, onClick: (nav: String) -> Unit) {
+    Column(
+        modifier = Modifier.padding(horizontal = 16.dp)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
         ) {
             Row(
                 modifier = Modifier
-                    .fillMaxWidth()
             ) {
-                Row(
-                    modifier = Modifier
-                ) {
-                    Text(
-                        text = text,
-                    )
-                }
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    horizontalArrangement = Arrangement.End,
-                ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.pencil_edit),
-                        contentDescription = "Edit",
-                        modifier = Modifier
-                            .size(20.dp)
-                            .clickable {
-                                onClick("edit")
-                            }
-                    )
-                }
+                Text(
+                    text = text,
+                )
             }
-            HorizontalDivider(
+            Row(
                 modifier = Modifier
-                    .height(1.dp)
-                    .background(Color.Black)
-                    .padding(3.dp)
-            )
+                    .fillMaxWidth(),
+                horizontalArrangement = Arrangement.End,
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.pencil_edit),
+                    contentDescription = "Edit",
+                    modifier = Modifier
+                        .size(20.dp)
+                        .clickable {
+                            onClick("Edit")
+                        }
+                )
+            }
+        }
+        Row(
+            modifier = Modifier
+                .height(1.dp)
+                .background(Color.Black)
+                .padding(3.dp)
+                .fillMaxWidth()
+        ){
+
+        }
+    }
+    Spacer(
+        modifier = Modifier.padding(8.dp)
+    )
+}
+
+@Composable
+fun ProfileInfo(text: String, onClick: (nav: String) -> Unit = {}) {
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp)
+    ) {
+        Text(
+            text = text
+        )
+        Row(
+            modifier = Modifier
+                .height(1.dp)
+                .background(Color.Black)
+                .padding(3.dp)
+                .fillMaxWidth()
+        ){
+
         }
         Spacer(
             modifier = Modifier.padding(8.dp)
         )
-    } else {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-        ) {
-            Text(
-                text = text
-            )
-            HorizontalDivider(
-                modifier = Modifier
-                    .height(1.dp)
-                    .background(Color.Black)
-                    .padding(3.dp)
-            )
-            Spacer(
-                modifier = Modifier.padding(8.dp)
-            )
-        }
     }
 }
 

@@ -1,5 +1,6 @@
 package com.example.roomfinder.view
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -31,17 +32,25 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
+import androidx.navigation.toRoute
 import com.example.roomfinder.R
+import com.example.roomfinder.model.Room
 import com.example.roomfinder.viewmodel.AuthenticationViewModel
 import com.example.roomfinder.viewmodel.ViewModelFactory
+import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 
 class Home : ComponentActivity() {
 
     private lateinit var authViewModel: AuthenticationViewModel
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         authViewModel = ViewModelProvider(
@@ -49,6 +58,21 @@ class Home : ComponentActivity() {
             ViewModelFactory(applicationContext)
         )[AuthenticationViewModel::class.java]
         val student = authViewModel.getStoredStudent()
+
+        val roomNavType = object : NavType<Room>(isNullableAllowed = false) {
+            override fun put(bundle: Bundle, key: String, value: Room) {
+                bundle.putString(key, Json.encodeToString(value))
+            }
+
+            override fun get(bundle: Bundle, key: String): Room? {
+                return Json.decodeFromString(bundle.getString(key) ?: "")
+            }
+
+            override fun parseValue(value: String): Room {
+                return Json.decodeFromString(value)
+            }
+        }
+
         setContent {
             val navController = rememberNavController()
             NavHost(
@@ -56,17 +80,38 @@ class Home : ComponentActivity() {
                 startDestination = ScreenB
             ) {
                 composable<ScreenA> {
-                    RequestFormScreen()
+                    Column (
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(Color.White),
+                        horizontalAlignment = CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ){
+                        Text(
+                            text = "Screen A"
+                        )
+                    }
+                }
+                composable(
+                    route = "ScreenA/{room}",
+                    arguments = listOf(navArgument("room") { type = roomNavType })
+                ) { backStackEntry ->
+                    val room = backStackEntry.arguments?.getString("room")?.let {
+                        Json.decodeFromString<Room>(it)
+                    }
+                    room?.let {
+                        RequestFormScreen(room = it)
+                    }
                 }
                 composable<ScreenB> {
                     if (student != null) {
                         HomeScreen(
-                            onClick = { nav, index ->
+                            onClick = { nav, room ->
                                 when (nav) {
-                                    "Request" -> navController.navigate(ScreenA)
+                                    "Request" -> navController.navigate("ScreenA/${Json.encodeToString(room)}")
                                     "Settings" -> navController.navigate(ScreenE)
                                     "Pending" -> navController.navigate(ScreenC)
-                                    "Details" -> navController.navigate(ScreenF(index))
+                                    "Details" -> navController.navigate("ScreenF/${Json.encodeToString(room)}")
                                 }
                             },
                             student
@@ -83,10 +128,7 @@ class Home : ComponentActivity() {
                     ){
                         PendingScreen(onClick = { nav ->
                             when (nav) {
-                                "Request" -> navController.navigate(ScreenA)
-                                "Settings" -> navController.navigate(ScreenE)
-                                "Pending" -> navController.navigate(ScreenC)
-                                "Details" -> navController.navigate(ScreenF(0))
+                                "Delete" -> navController.navigate(ScreenC)
                             }
                         })
                     }
@@ -109,17 +151,35 @@ class Home : ComponentActivity() {
                 composable<ScreenE> {
                     if (student != null) {
                         SettingsScreen (
-                            onClick = { nav ->
-                                when (nav) {
-                                    "edit" -> navController.navigate(ScreenF(0))
+                            onClick = {
+                                when (it) {
+                                    "Edit" -> startActivity(Intent(this@Home, ChangePassword::class.java))
+                                    "Log Out" -> {
+                                    authViewModel.logout {
+                                        // Navigate to login screen
+                                        startActivity(
+                                            Intent(this@Home, Login::class.java)
+                                                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                                        )
+                                        finish()
+                                    }
+                                }
                                 }
                             },
                             student
                         )
                     }
                 }
-                composable<ScreenF> {
-                    DetailScreen()
+                composable(
+                    route = "ScreenF/{room}",
+                    arguments = listOf(navArgument("room") { type = roomNavType })
+                ) { backStackEntry ->
+                    val room = backStackEntry.arguments?.getString("room")?.let {
+                        Json.decodeFromString<Room>(it)
+                    }
+                    room?.let {
+                        DetailScreen(it)
+                    }
                 }
             }
             BottomMenu(navController)
@@ -139,7 +199,7 @@ fun BottomMenu(navController : NavController = rememberNavController()) {
         Row (
             modifier = Modifier
                 .fillMaxWidth()
-                .height(60.dp)
+                .height(70.dp)
                 .clip(RoundedCornerShape(10.dp))
                 .background(Color.White)
                 .border(width = 1.dp, color = Color.Black, shape = RoundedCornerShape(10.dp)),
@@ -210,6 +270,10 @@ fun BottomMenuItem(icon: Painter, text: String, onItemClick: () -> Unit = {}) {
 object ScreenA
 
 @Serializable
+data class RequestFormNav(
+    val index: Room
+)
+@Serializable
 object ScreenB
 
 @Serializable
@@ -223,5 +287,6 @@ object ScreenE
 
 @Serializable
 data class ScreenF(
-    val index: Int
+    @Contextual
+    val index: Room
 )

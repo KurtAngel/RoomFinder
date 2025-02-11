@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
@@ -27,6 +28,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -45,6 +47,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -76,6 +79,10 @@ class SignUp : ComponentActivity() {
             this,
             ViewModelFactory(applicationContext)
         )[AuthenticationViewModel::class.java]
+        if (authViewModel.studentRepository.authToken?.isNotEmpty() == true){
+            startActivity(Intent(this, Home::class.java))
+            finish()
+        }
         setContent {
             SignUpScreen(
                 onClick = { mode ->
@@ -106,10 +113,13 @@ fun SignUpScreen(onClick: (String) -> Unit, context: Context, authViewModel: Aut
 
     fun validateInput(): Boolean {
         return if (email.isEmpty() || password.isEmpty()) {
-            errorMessage = "Please fill in both fields."
+            errorMessage = "Please fill in required fields."
             false
         } else if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
             errorMessage = "Please enter a valid email."
+            false
+        } else if (password !== confirmPassword) {
+            errorMessage = "Password didn't match."
             false
         } else {
             errorMessage = ""
@@ -183,6 +193,7 @@ fun SignUpScreen(onClick: (String) -> Unit, context: Context, authViewModel: Aut
                         "Student Number",
                     )
                 },
+                isError = !isValid,
                 singleLine = true,
                 keyboardOptions = KeyboardOptions.Default.copy(
                     keyboardType = KeyboardType.Number,
@@ -190,7 +201,11 @@ fun SignUpScreen(onClick: (String) -> Unit, context: Context, authViewModel: Aut
                 ),
                 shape = RoundedCornerShape(10.dp),
                 modifier = Modifier
-                    .fillMaxWidth()
+                    .fillMaxWidth(),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = Color.Black,
+                    focusedLabelColor = Color.Black,
+                )
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -201,6 +216,7 @@ fun SignUpScreen(onClick: (String) -> Unit, context: Context, authViewModel: Aut
                 onValueChange = {
                     email = it
                 },
+                isError = !isValid,
                 label = { Text("Email") },
                 singleLine = true,
                 keyboardOptions = KeyboardOptions.Default.copy(
@@ -209,58 +225,87 @@ fun SignUpScreen(onClick: (String) -> Unit, context: Context, authViewModel: Aut
                 ),
                 shape = RoundedCornerShape(10.dp),
                 modifier = Modifier
-                    .fillMaxWidth()
+                    .fillMaxWidth(),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = Color.Black,
+                    focusedLabelColor = Color.Black,
+                )
             )
 
             Spacer(modifier = Modifier.height(16.dp))
-
+            var passwordVisible by remember { mutableStateOf(false) }
             // Password TextField
             OutlinedTextField(
                 value = password,
                 onValueChange = { password = it },
                 label = { Text("Password") },
-                visualTransformation = PasswordVisualTransformation(),
+                visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                 keyboardOptions = KeyboardOptions.Default.copy(
                     keyboardType = KeyboardType.Password,
                     imeAction = ImeAction.Next
                 ),
+                isError = !isValid,
                 shape = RoundedCornerShape(10.dp),
                 modifier = Modifier.fillMaxWidth(),
                 trailingIcon = {
+                    val icon = if (passwordVisible) R.drawable.password_eye else R.drawable.password_eye_close
                     Image(
-                        painter = painterResource(id = R.drawable.password_eye),
+                        painter = painterResource(id = icon),
                         contentDescription = "Show Password",
-                        modifier = Modifier.size(30.dp)
+                        modifier = Modifier
+                            .size(30.dp)
+                            .clickable {
+                                passwordVisible = !passwordVisible
+                            }
                     )
-                }
+                },
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = Color.Black,
+                    focusedLabelColor = Color.Black,
+                )
             )
 
             Spacer(modifier = Modifier.height(16.dp))
 
+            var confirmPasswordVisible by remember { mutableStateOf(false) }
             // Confirm Password TextField
             OutlinedTextField(
                 value = confirmPassword,
                 onValueChange = { confirmPassword = it },
                 label = { Text("Confirm Password") },
-                visualTransformation = PasswordVisualTransformation(),
+                visualTransformation = if (confirmPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                 keyboardOptions = KeyboardOptions.Default.copy(
                     keyboardType = KeyboardType.Password,
                     imeAction = ImeAction.Done
                 ),
+                isError = !isValid,
                 shape = RoundedCornerShape(10.dp),
                 modifier = Modifier.fillMaxWidth(),
                 trailingIcon = {
+                    val icon = if (confirmPasswordVisible) R.drawable.password_eye else R.drawable.password_eye_close
                     Image(
-                        painter = painterResource(id = R.drawable.password_eye),
+                        painter = painterResource(id = icon),
                         contentDescription = "Show Password",
-                        modifier = Modifier.size(30.dp)
+                        modifier = Modifier
+                            .size(30.dp)
+                            .clickable {
+                                confirmPasswordVisible = !confirmPasswordVisible
+                            }
                     )
-                }
+                },
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = Color.Black,
+                    focusedLabelColor = Color.Black,
+                )
             )
 
             // Error message
-            if (!isValid) {
-                Text(errorMessage, color = Color.Red, style = MaterialTheme.typography.bodyLarge)
+            if (isValid) {
+                Text(
+                    modifier = Modifier.align(Alignment.CenterHorizontally).padding(top = 6.dp),
+                    text = errorMessage,
+                    color = Color.Red,
+                    fontSize = 12.sp)
             }
 
             Spacer(modifier = Modifier.height(24.dp))
@@ -268,6 +313,7 @@ fun SignUpScreen(onClick: (String) -> Unit, context: Context, authViewModel: Aut
             // Sign In Button
             Button(
                 onClick = {
+                    isValid = validateInput()
                     if (validateInput()) {
                         isLoading = true
                         val student = Student(

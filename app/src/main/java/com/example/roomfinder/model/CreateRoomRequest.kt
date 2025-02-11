@@ -1,14 +1,21 @@
 package com.example.roomfinder.model
 
 import com.google.gson.annotations.SerializedName
+import kotlinx.serialization.Serializable
 
+
+@Serializable
 data class CreateRoomRequest(
-    val name: String,
-    val status: String,
-    val availability: String,
-    val equipment: String,
-    val capacity: Int,
-    @SerializedName("room_type")
-    val roomType: String
+    @SerializedName("room_id")
+    val roomId: Int,
+    @SerializedName("student_id")
+    val studentId: Int ?= null,
+    val roomName: String,
+    val purpose: String,
+    @SerializedName("starting_time")
+    val startingTime: String,
+    @SerializedName("ending_time")
+    val endingTime: String,
+    val status: String ?= null
 )
 

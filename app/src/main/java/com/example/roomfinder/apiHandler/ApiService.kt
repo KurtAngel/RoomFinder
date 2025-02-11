@@ -2,9 +2,7 @@ package com.example.roomfinder.apiHandler
 
 import com.example.roomfinder.model.Admin
 import com.example.roomfinder.model.AuthResponse
-import com.example.roomfinder.model.CreateAdminRequest
 import com.example.roomfinder.model.CreateRoomRequest
-import com.example.roomfinder.model.CreateRoomRequestRequest
 import com.example.roomfinder.model.MessageResponse
 import com.example.roomfinder.model.Room
 import com.example.roomfinder.model.RoomRequest
@@ -88,7 +86,7 @@ interface ApiService {
 
     @POST("room_request")
     suspend fun createRoomRequest(
-        @Body request: CreateRoomRequestRequest
+        @Body request: CreateRoomRequest
     ): Response<MessageResponse>
 
     @DELETE("room_request/{id}")
@@ -100,9 +98,6 @@ interface ApiService {
 
     @GET("admin")
     suspend fun getAllAdmins(): Response<List<Admin>>
-
-    @POST("admin")
-    suspend fun createAdmin(@Body admin: CreateAdminRequest): Response<MessageResponse>
 
     @PUT("admin/{id}")
     suspend fun updateAdmin(

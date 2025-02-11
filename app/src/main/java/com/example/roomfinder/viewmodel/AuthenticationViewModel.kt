@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.coroutine.repository.StudentRepository
+import com.example.roomfinder.RoomFinderApplication
 import com.example.roomfinder.apiHandler.RetrofitClient
 import com.example.roomfinder.model.AuthResponse
 import com.example.roomfinder.model.Student
@@ -14,7 +15,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
-class AuthenticationViewModel(private val studentRepository: StudentRepository) : ViewModel() {
+class AuthenticationViewModel(val studentRepository: StudentRepository) : ViewModel() {
 
     private val apiService = RetrofitClient.apiService
 
@@ -31,6 +32,7 @@ class AuthenticationViewModel(private val studentRepository: StudentRepository) 
                     val studentResponse = response.body()
                     if (studentResponse != null) {
                         studentRepository.saveStudent(studentResponse.student)
+                        studentRepository.saveToken(studentResponse.token)
                         onSuccess()
                     } else {
                         onError("Login failed: Empty response")
@@ -60,6 +62,7 @@ class AuthenticationViewModel(private val studentRepository: StudentRepository) 
                     if (studentResponse != null) {
                         // Save token or handle successful signup
                         studentRepository.saveStudent(studentResponse.student)
+                        studentRepository.saveToken(studentResponse.token)
                         onSuccess()
                     } else {
                         onError("Signup failed: Empty response")
@@ -76,5 +79,22 @@ class AuthenticationViewModel(private val studentRepository: StudentRepository) 
     // Add function to get stored student
     fun getStoredStudent(): Student? {
         return studentRepository.getStudent()
+    }
+
+    fun logout(onComplete: () -> Unit) {
+        viewModelScope.launch {
+            try {
+                // Clear StudentRepository data
+                studentRepository.clearStudent()
+                studentRepository.clearToken()
+                
+                // Clear SessionManager data
+                RoomFinderApplication.instance.sessionManager.clearSession()
+                
+                onComplete()
+            } catch (e: Exception) {
+                Log.e("AuthViewModel", "Error during logout: ${e.message}")
+            }
+        }
     }
 }
